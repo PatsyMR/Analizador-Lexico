@@ -1,2 +1,55 @@
-123.4 eeee 222
-ttt 12.6
+//Aqui está el lenguaje
+//Esto es un comentario
+$Esto tambien es un comentario
+
+
+int i;
+float f = 123.4; $Esto es un flotante
+int ent = 123;   //Esto es un entero 
+char a = 'c';    //Esto es un caracter
+float f2 = 1.333;
+
+
+int main()
+{
+
+for(i=0; i<5; i++)
+{
+   printf("indice: %d",i); $Es tambien una cadena
+}
+
+if(i=4)
+{
+   printf("i: %d",4);  //i=4
+}
+
+else
+printf("i: %d",i);  $i distinta de 4
+
+switch
+{
+	case 1:
+	printf("");
+	break;  //Esto es una palabra reservada
+	
+	case 2:
+	break;
+
+	default;
+	break;
+}
+
+
+do {
+	printf("Esto es un bucle do-while");
+
+}while(i != 4);
+
+while(i != 4)  $bucle while, feof->tambien es reservada
+       {
+	return i; $palabra reservada
+       }
+
+return 0;
+
+} 

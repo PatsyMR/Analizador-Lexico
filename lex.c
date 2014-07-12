@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "lex.h"
+#define IDNUMBER2 1001 //Para comentarios
+//#define COM 1000 //Para comentarios
 
 int isNumber(char c){//para ver si octiene un numero [0-9]
 
@@ -233,4 +232,104 @@ void tokenSetLex(token *t,char *lexema)
         t->lexema[k]=lexema[k];
      }     
         t->lexema[l]='\0';
+}
+
+
+//Funcion para detectar comentarios ( //, $ )
+token *isComment(FILE *fp){
+       int k=0;
+      token *t=NULL;
+      char c;
+      int state =0, is_token=FALSE, count=0;
+      long int pos;
+      pos = ftell(fp);
+      
+    //  while(!feof(fp))  //Mientras no se llegue al final del archivo
+    //   { 
+      
+      
+      do{
+          switch(state)
+          {          
+     case 0:
+          c=fgetc(fp);
+          
+          if(c == '/') 
+          {
+             state = 1; //printf("%c, ",c);
+             count++;
+          }
+          else if(c=='$')
+          {
+               state = A1; // printf("%c, ",c);
+               count++;
+           }
+           else
+           {
+               state=ERROR; // printf("Error");
+           }
+           break;
+           
+      case 1:
+          c=fgetc(fp);          
+          if(c == '/')
+          {
+             state = A1;  //printf("%c, ",c);
+             count++;
+          }         
+           else
+           {
+               state=ERROR; // printf("Error");
+           }
+           break;
+           
+     
+      case A1:
+          c=fgetc(fp);          
+          if(c != '\n')
+          {
+             state = A1; // printf("%c, ",c);
+             count++;
+          }
+           else
+          {
+               state =A2;  //printf("%c, ",c);
+               count++;
+           }
+           break;
+     
+                
+      case A2:
+               state=ERROR; // printf("token true\n\n");
+               is_token=TRUE;
+           break;     
+         
+          }//Fin switch
+      }while(state != ERROR);      
+           
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              printf("Esto es un comentario: ");
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);
+                  printf("%c",t->lexema[k]);                  
+              }
+              t->id = ID_COMMENT;
+              t->lexema[count]='\n'; //la \n para fin              
+           }
+           else{
+                fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } //O -1
+                
+                
+    //            } //fin while
+  //   fclose(fp);
+           return t;
 }
