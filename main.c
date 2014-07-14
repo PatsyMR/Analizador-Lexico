@@ -25,12 +25,17 @@ int main(int argc, char *argv[])
     
     token *t; //Creación del token que almacena resultados 
     
-   //////////////////////////////// PRUEBAS YULI
-    t=isComment(fp);    
-   // printf("lexema %s\n",t->lexema);     
-   //printf(" ---> lid %d\n",t->id);     
-    /////////////////////////////// HASTA AQUI HAGO MIS PRUEBAS
+//////////////////////////////// PRUEBAS YULI
+    printf("****** COMENTARIOS ******\n\n");
+    while(!feof(fp))
+    {
+        t=isComment(fp);  
+    }
+    fclose(fp);
+/////////////////////////////// HASTA AQUI HAGO MIS PRUEBAS
+      
   
+  printf("\n");
   system("PAUSE");	
   return 0; 
 

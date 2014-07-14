@@ -1,6 +1,5 @@
 #include "lex.h"
-#define IDNUMBER2 1001 //Para comentarios
-//#define COM 1000 //Para comentarios
+
 
 int isNumber(char c){//para ver si octiene un numero [0-9]
 
@@ -237,16 +236,12 @@ void tokenSetLex(token *t,char *lexema)
 
 //Funcion para detectar comentarios ( //, $ )
 token *isComment(FILE *fp){
-       int k=0;
+      int k=0;
       token *t=NULL;
-      char c;
+      char c=0;
       int state =0, is_token=FALSE, count=0;
       long int pos;
       pos = ftell(fp);
-      
-    //  while(!feof(fp))  //Mientras no se llegue al final del archivo
-    //   { 
-      
       
       do{
           switch(state)
@@ -274,7 +269,7 @@ token *isComment(FILE *fp){
           c=fgetc(fp);          
           if(c == '/')
           {
-             state = A1;  //printf("%c, ",c);
+             state = A1; // printf("%c, ",c);
              count++;
           }         
            else
@@ -293,7 +288,7 @@ token *isComment(FILE *fp){
           }
            else
           {
-               state =A2;  //printf("%c, ",c);
+               state =A2; // printf("%c, ",c);
                count++;
            }
            break;
@@ -314,22 +309,23 @@ token *isComment(FILE *fp){
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
-              printf("Esto es un comentario: ");
+              t->id = ID_COMMENT;  
+              printf("%d  ",t->id); //Solo imprimir identificador
+              
               for(k=0; k<count; k++)
               {
                   t->lexema[k]=fgetc(fp);
-                  printf("%c",t->lexema[k]);                  
+                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
               }
-              t->id = ID_COMMENT;
-              t->lexema[count]='\n'; //la \n para fin              
+              is_token=FALSE; 
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
            }
            else{
-                fseek(fp,pos,SEEK_SET);
+                //fseek(fp,pos,SEEK_SET);
                 return NULL;  
                 } //O -1
-                
-                
-    //            } //fin while
-  //   fclose(fp);
+ 
            return t;
 }

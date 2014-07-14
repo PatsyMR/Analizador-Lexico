@@ -8,8 +8,8 @@
 #define A2 3
 #define ERROR -1
 
-#define ID_NUMBER 1000
-#define ID_COMMENT 1001  //Para comentarios
+#define ID_COMMENT 1000   //Identificador de comentarios
+#define ID_NUMBER 1001
 
 
 typedef struct toxen_tag
