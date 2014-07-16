@@ -1,6 +1,185 @@
 #include "lex.h"
 
 
+//Funcion para detectar comentarios ( //, $ )
+token *isComment(FILE *fp){
+      int k=0;
+      token *t=NULL;
+      char c=0;
+      int state =0, is_token=FALSE, count=0;
+      long int pos;
+      pos = ftell(fp);
+      
+      do{
+          switch(state)
+          {          
+     case 0:
+          c=fgetc(fp);
+          
+          if(c == '/') 
+          {
+             state = 1; //printf("%c, ",c);
+             count++;
+          }
+          else if(c=='$')
+          {
+               state = A1; // printf("%c, ",c);
+               count++;
+           }
+           else
+           {
+               state=ERROR; // printf("Error");
+           }
+           break;
+           
+      case 1:
+          c=fgetc(fp);          
+          if(c == '/')
+          {
+             state = A1; // printf("%c, ",c);
+             count++;
+          }         
+           else
+           {
+               state=ERROR; // printf("Error");
+           }
+           break;
+           
+     
+      case A1:
+          c=fgetc(fp);          
+          if(c != '\n')
+          {
+             state = A1; // printf("%c, ",c);
+             count++;
+          }
+           else
+          {
+               state =A2; // printf("%c, ",c);
+               count++;
+           }
+           break;
+     
+                
+      case A2:
+               state=ERROR; // printf("token true\n\n");
+               is_token=TRUE;
+           break;     
+         
+          }//Fin switch
+      }while(state != ERROR);      
+           
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              t->id = comentario; // printf("%d \n",t->id);
+              printf("%d  ",t->id); //Solo imprimir identificador
+              
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);
+                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+              }
+              is_token=FALSE; 
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+                //fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } //O -1
+ 
+           return t;
+}
+
+
+
+//Detecta cadenas
+token *isString(FILE *fp){
+      int k=0;
+      token *t=NULL;
+      char c=0;
+      int state =0, is_token=FALSE, count=0;
+      long int pos;
+      pos = ftell(fp);
+     
+      do{
+          switch(state)
+          {          
+     case 0:
+          c=fgetc(fp);
+          
+          if(c == '"') 
+          {
+             state = 1; //printf("%c, ",c);
+             count++;
+          }
+           else
+           {
+               state=ERROR; // printf("Error");
+           }
+           break;
+   
+      case 1:
+          c=fgetc(fp);          
+          if(c != '"')
+          {
+             state = 1; // printf("%c, ",c);
+             count++;
+          }
+           else
+          {
+               state =A1; // printf("%c, ",c);
+               count++;
+           }
+           break;
+     
+                
+      case A1:
+               state=ERROR; // printf("token true\n\n");
+               is_token=TRUE;
+           break;     
+         
+          }//Fin switch
+      }while(state != ERROR);      
+           
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              t->id=cadena;  
+              printf("%d  ",t->id); //Solo imprimir identificador
+              
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);
+                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+              }
+              printf("\n");
+              is_token=FALSE; 
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+                //fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } //O -1
+ 
+           return t;
+    
+}
+
+
+
 int isNumber(char c){//para ver si octiene un numero [0-9]
 
     if(c>='0' && c<='9')
@@ -234,98 +413,3 @@ void tokenSetLex(token *t,char *lexema)
 }
 
 
-//Funcion para detectar comentarios ( //, $ )
-token *isComment(FILE *fp){
-      int k=0;
-      token *t=NULL;
-      char c=0;
-      int state =0, is_token=FALSE, count=0;
-      long int pos;
-      pos = ftell(fp);
-      
-      do{
-          switch(state)
-          {          
-     case 0:
-          c=fgetc(fp);
-          
-          if(c == '/') 
-          {
-             state = 1; //printf("%c, ",c);
-             count++;
-          }
-          else if(c=='$')
-          {
-               state = A1; // printf("%c, ",c);
-               count++;
-           }
-           else
-           {
-               state=ERROR; // printf("Error");
-           }
-           break;
-           
-      case 1:
-          c=fgetc(fp);          
-          if(c == '/')
-          {
-             state = A1; // printf("%c, ",c);
-             count++;
-          }         
-           else
-           {
-               state=ERROR; // printf("Error");
-           }
-           break;
-           
-     
-      case A1:
-          c=fgetc(fp);          
-          if(c != '\n')
-          {
-             state = A1; // printf("%c, ",c);
-             count++;
-          }
-           else
-          {
-               state =A2; // printf("%c, ",c);
-               count++;
-           }
-           break;
-     
-                
-      case A2:
-               state=ERROR; // printf("token true\n\n");
-               is_token=TRUE;
-           break;     
-         
-          }//Fin switch
-      }while(state != ERROR);      
-           
-           
-           if(is_token)
-           {
-              fseek(fp,pos,SEEK_SET);
-              t=tokenCreate();
-              t->lexema=(char*)malloc(sizeof(char)*(count+1));
-              
-              t->id = ID_COMMENT;  
-              printf("%d  ",t->id); //Solo imprimir identificador
-              
-              for(k=0; k<count; k++)
-              {
-                  t->lexema[k]=fgetc(fp);
-                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
-              }
-              is_token=FALSE; 
-              state=0;  
-              
-              t->lexema[count]='\n'; //la \n para fin de comentario             
-           }
-           else{
-                //fseek(fp,pos,SEEK_SET);
-                return NULL;  
-                } //O -1
- 
-           return t;
-}

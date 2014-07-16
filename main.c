@@ -26,10 +26,11 @@ int main(int argc, char *argv[])
     token *t; //Creación del token que almacena resultados 
     
 //////////////////////////////// PRUEBAS YULI
-    printf("****** COMENTARIOS ******\n\n");
+  //  printf("****** COMENTARIOS ******\n\n");
     while(!feof(fp))
     {
-        t=isComment(fp);  
+        t=isComment(fp); //Comentarios
+       // t=isString(fp);  //Cadenas  
     }
     fclose(fp);
 /////////////////////////////// HASTA AQUI HAGO MIS PRUEBAS
