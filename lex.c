@@ -188,7 +188,107 @@ token *is_number(FILE *fp)
            
            
    }//fin de funcion
-                
+//////////////////////////////////////////////////////////////////////////////////////////////////      
+
+
+
+token *isOpe(FILE *fp)
+{
+      int k=0;
+      token *t=0;
+      char c;
+      int state =0, is_token=FALSE,count=0;
+      long int pos;
+      pos = ftell(fp);
+      
+      do{
+          switch(state)
+          {          
+ case 0:
+          c=fgetc(fp);
+          
+    if(c=='+' )
+           //if(c>='a' && c<='h' || c>='j' && c<='z')
+         {
+             state = A1;
+             count++;
+         }
+    else if (c=='*')
+           {
+               
+             state = A1;
+             count++;
+           }
+    else if (c=='-')
+           {
+               
+             state = A1;
+             count++;
+           }
+
+   else if (c=='/')
+           {
+               
+             state = A1;
+             count++;
+           }
+
+   else if (c=='%')
+           {
+               
+             state = A1;
+             count++;
+           }
+
+   else
+           {
+               state=ERROR; // printf("Error");
+           }
+
+
+           break;
+           
+  case A1:
+               state=ERROR; // printf("token true\n\n");
+               is_token=TRUE;
+           break;   
+                    
+          
+          }
+          }while(state != ERROR);      
+           
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              t->id = ID_OPE;  
+              printf("%d  ",t->id); //Solo imprimir identificador
+              
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);
+                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+              }
+              is_token=FALSE; 
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+                //fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } //O -1
+ 
+           return t;
+    
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+          
       
 FILE* CrearArchivo(char filename[], char *tipo)
 {
@@ -234,3 +334,7 @@ void tokenSetLex(token *t,char *lexema)
      }     
         t->lexema[l]='\0';
 }
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+
+

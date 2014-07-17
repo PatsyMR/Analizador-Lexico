@@ -8,6 +8,7 @@
 #define ERROR -1
 
 #define ID_NUMBER 1000
+#define ID_OPE 1001
 
 typedef struct toxen_tag
 {
@@ -27,3 +28,6 @@ FILE* CrearArchivo(char filename[], char *tipo);
 token *tokenCreate();
 void tokenfree(token *t);
 void tokenSetLex(token *t,char *lexema);
+
+
+token *isOpe(FILE *fp);

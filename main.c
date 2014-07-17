@@ -21,14 +21,25 @@ int main(int argc, char *argv[])
     fp=CrearArchivo(filename,"r");  
     
     token *t;  
-    t=is_number(fp);
-    printf("lexema %s\n",t->lexema); 
-    printf("lid %d\n",t->id); 
+   // t=is_number(fp);
+    //printf("lexema %s\n",t->lexema); 
+    //printf("lid %d\n",t->id); 
+    
+    ///////////////
+     while(!feof(fp))
+    {
+        t=isOpe(fp);  
+        printf("\n");         
+    }
+    fclose(fp);
+   //////// 
+    
     
     //printf("%d \n",isInteger(fp));
    // printf("%f \n",is_number(fp)); 
   
+ 
   system("PAUSE");	
-  return 0; 
+  return 0;
 
 }
