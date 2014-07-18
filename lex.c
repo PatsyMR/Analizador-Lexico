@@ -1,16 +1,95 @@
 #include "lex.h"
 
-
-//Funcion para detectar comentarios ( //, $ )
-token *isComment(FILE *fp){
+//Detecta cadenas
+token *isString(FILE *fp){
       int k=0;
-      token *t=0;
-      //token *t=NULL;
+      token *t=NULL;
       char c=0;
       int state =0, is_token=FALSE, count=0;
       long int pos;
       pos = ftell(fp);
-      
+     
+      do{
+          switch(state)
+          {          
+     case 0:
+          c=fgetc(fp);
+          
+          if(c == '"') 
+          {
+             state = 1; 
+             count++;
+          }
+           else
+           {
+               state=ERROR; 
+           }
+           break;
+   
+      case 1:
+          c=fgetc(fp);          
+          if(c != '"')
+          {
+             state = 1; 
+             count++;
+          }
+           else
+          {
+               state =A1; 
+               count++;
+           }
+           break;
+     
+                
+      case A1:
+               state=ERROR; 
+               is_token=TRUE;
+           break;     
+         
+          }//Fin switch
+      }while(state != ERROR);      
+           
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              t->id = ID_STRING;  
+              printf("%d  ",t->id); //Solo imprimir identificador
+              
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);
+                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+              }
+              printf("\n");
+              is_token=FALSE; 
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+                //fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } 
+ 
+           return t;
+    
+}
+
+
+
+//Detecta comentarios definidos por ("", $)
+token *isComment(FILE *fp){
+      int k=0;
+      token *t=NULL;
+      char c=0;
+      int state =0, is_token=FALSE, count=0;
+      long int pos;
+      pos = ftell(fp);
+     
       do{
           switch(state)
           {          
@@ -77,7 +156,7 @@ token *isComment(FILE *fp){
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
-              t->id = ID_COMMENTT; // printf("%d \n",t->id);
+              t->id = ID_COMMENT;  
               printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
@@ -96,58 +175,69 @@ token *isComment(FILE *fp){
                 } //O -1
  
            return t;
+    
 }
 
 
-
-//Detecta cadenas
-token *isString(FILE *fp){
+//Detecta Operadores (aritéticos, agrupación..)
+token *isOpe(FILE *fp)
+{
       int k=0;
-      token *t=NULL;
-      char c=0;
-      int state =0, is_token=FALSE, count=0;
+      token *t=0;
+      char c;
+      int state =0, is_token=FALSE,count=0;
       long int pos;
       pos = ftell(fp);
-     
+      
       do{
           switch(state)
           {          
-     case 0:
+ case 0:
           c=fgetc(fp);
           
-          if(c == '"') 
-          {
-             state = 1; //printf("%c, ",c);
+    if(c=='+' )
+           //if(c>='a' && c<='h' || c>='j' && c<='z')
+         {
+             state = A1;
              count++;
-          }
-           else
+         }
+    else if (c=='*')
+           {              
+             state = A1;
+             count++;
+           }
+    else if (c=='-')
+           {               
+             state = A1;
+             count++;
+           }
+
+   else if (c=='/')
+           {               
+             state = A1;
+             count++;
+           }
+
+   else if (c=='%')
+           {               
+             state = A1;
+             count++;
+           }
+
+   else
            {
                state=ERROR; // printf("Error");
            }
+
            break;
-   
-      case 1:
-          c=fgetc(fp);          
-          if(c != '"')
-          {
-             state = 1; // printf("%c, ",c);
-             count++;
-          }
-           else
-          {
-               state =A1; // printf("%c, ",c);
-               count++;
-           }
-           break;
-     
-                
-      case A1:
+           
+  case A1:
                state=ERROR; // printf("token true\n\n");
                is_token=TRUE;
-           break;     
-         
-          }//Fin switch
-      }while(state != ERROR);      
+           break;
+                    
+          }
+          }while(state != ERROR);      
            
            
            if(is_token)
@@ -156,7 +246,7 @@ token *isString(FILE *fp){
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
-              t->id = ID_STRING;  
+              t->id = ID_OPE;  
               printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
@@ -173,54 +263,14 @@ token *isString(FILE *fp){
            else{
                 //fseek(fp,pos,SEEK_SET);
                 return NULL;  
-                } //O -1
+                } 
  
            return t;
     
 }
 
 
-
-int isNumber(char c){//para ver si octiene un numero [0-9]
-
-    if(c>='0' && c<='9')
-    {
-        return TRUE;
-    }
-    return FALSE;
-
-}
-
-int isLetter(char c){//para ver si esta entre [a-z A-Z]
-
-    if((c>='A' && c<='Z') || (c>='a' && c<='z'))
-    {
-        return TRUE;
-    }
-    return FALSE;
-}
-
-int isalPhanum(char c){//para ver si [a-z A-Z 0-9]
-
-    //if((c>='A' && c<='z') || (c>='0' && c<='9'))
-    if(isNumber(c) || isLetter(c))
-    {
-        return TRUE;
-    }
-    return FALSE;
-
-}
-int isHex(char c){
-
-
-    if(isNumber(c) || c>='A' && c<='F')
-    {
-        return TRUE;
-    }
-    return FALSE;
-}
-////////////////////////////////////////////////////////////////////////
-
+//Detecta numeros Enteros
 int isInteger(FILE *pf){
 
     int k, Count=0;
@@ -250,10 +300,7 @@ int isInteger(FILE *pf){
 }
 
 
-
-
-
-
+//Checa que sea número (0 - 9)
 token *is_number(FILE *fp)
 {
       int k=0;
@@ -351,7 +398,7 @@ token *is_number(FILE *fp)
               for(k=0; k<count; k++)
               {
                   t->lexema[k]=fgetc(fp);
-                  t->id=1000;
+                  t->id=ID_NUMBER;
                 //t[k]=fgetc(fp);
               }
               t->lexema[count]='\0'; //la diagonal 0 de espacio  
@@ -366,107 +413,7 @@ token *is_number(FILE *fp)
            
            
    }//fin de funcion
-//////////////////////////////////////////////////////////////////////////////////////////////////      
-
-
-
-token *isOpe(FILE *fp)
-{
-      int k=0;
-      token *t=0;
-      char c;
-      int state =0, is_token=FALSE,count=0;
-      long int pos;
-      pos = ftell(fp);
-      
-      do{
-          switch(state)
-          {          
- case 0:
-          c=fgetc(fp);
-          
-    if(c=='+' )
-           //if(c>='a' && c<='h' || c>='j' && c<='z')
-         {
-             state = A1;
-             count++;
-         }
-    else if (c=='*')
-           {
-               
-             state = A1;
-             count++;
-           }
-    else if (c=='-')
-           {
-               
-             state = A1;
-             count++;
-           }
-
-   else if (c=='/')
-           {
-               
-             state = A1;
-             count++;
-           }
-
-   else if (c=='%')
-           {
-               
-             state = A1;
-             count++;
-           }
-
-   else
-           {
-               state=ERROR; // printf("Error");
-           }
-
-
-           break;
-           
-  case A1:
-               state=ERROR; // printf("token true\n\n");
-               is_token=TRUE;
-           break;   
-                    
-          
-          }
-          }while(state != ERROR);      
-           
-           
-           if(is_token)
-           {
-              fseek(fp,pos,SEEK_SET);
-              t=tokenCreate();
-              t->lexema=(char*)malloc(sizeof(char)*(count+1));
-              
-              t->id = ID_OPE;  
-              printf("%d  ",t->id); //Solo imprimir identificador
-              
-              for(k=0; k<count; k++)
-              {
-                  t->lexema[k]=fgetc(fp);
-                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
-              }
-              is_token=FALSE; 
-              state=0;  
-              
-              t->lexema[count]='\n'; //la \n para fin de comentario             
-           }
-           else{
-                //fseek(fp,pos,SEEK_SET);
-                return NULL;  
-                } //O -1
- 
-           return t;
-    
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-          
+                
       
 FILE* CrearArchivo(char filename[], char *tipo)
 {
@@ -513,8 +460,43 @@ void tokenSetLex(token *t,char *lexema)
         t->lexema[l]='\0';
 }
 
+////////////////////////////////////// NO SE NECESITAN (CREO)
+
+int isNumber(char c){//para ver si octiene un numero [0-9]
+
+    if(c>='0' && c<='9')
+    {
+        return TRUE;
+    }
+    return FALSE;
+
+}
+
+int isLetter(char c){//para ver si esta entre [a-z A-Z]
+
+    if((c>='A' && c<='Z') || (c>='a' && c<='z'))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+int isalPhanum(char c){//para ver si [a-z A-Z 0-9]
+
+    //if((c>='A' && c<='z') || (c>='0' && c<='9'))
+    if(isNumber(c) || isLetter(c))
+    {
+        return TRUE;
+    }
+    return FALSE;
+
+}
+int isHex(char c){
 
 
-
-
-
+    if(isNumber(c) || c>='A' && c<='F')
+    {
+        return TRUE;
+    }
+    return FALSE;
+}

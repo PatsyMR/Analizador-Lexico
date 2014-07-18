@@ -1,10 +1,11 @@
 #include "lex.h"
+
 #define BUFLEN 30
    
 int main(int argc, char *argv[])
 {
-     
-     /////////////// PRUEBAS DE LO HECHO EN CLASE 
+    
+    /////////////// PRUEBAS DE LO HECHO EN CLASE 
    /* char a = '\\';
     char b = 'a';
     char c = '!';
@@ -22,36 +23,31 @@ int main(int argc, char *argv[])
     FILE *fp=NULL;
     char buf[BUFLEN];    
     fp=CrearArchivo(filename,"r");  
-
-   // token *t;  
-   // t=is_number(fp);
-    //printf("lexema %s\n",t->lexema); 
-    //printf("lid %d\n",t->id); 
     
-      
     token *t; //Creación del token que almacena resultados 
-
     
-//////////////////////////////// PRUEBAS YULI
-  //  printf("****** COMENTARIOS ******\n\n");
+   //////////////////////////////// PRUEBAS YULI
+    printf("****** COMENTARIOS ******\n\n");
     while(!feof(fp))
-    {
-        t=isComment(fp); //Comentarios
-       //t=isString(fp);  //Cadenas 
-        //t=isOpe(fp);  
-       //printf("\n"); 
-    }
-    fclose(fp);
-/////////////////////////////// HASTA AQUI HAGO MIS PRUEBAS
-      
-  
-
- 
-
- // printf("\n");
-
+        t=isComment(fp);  
+    rewind(fp); //Regresar al inicio del archivo
+    
+    printf("\n\n****** CADENAS ******\n\n");
+    while(!feof(fp))
+      t=isString(fp);       
+    rewind(fp);
+     
+    printf("\n\n****** OPERADORES ******\n\n"); 
+    while(!feof(fp))
+       t=isOpe(fp);
+    rewind(fp); 
+      //fclose(fp);
+    
+    /////////////////////////////// HASTA AQUI HAGO MIS PRUEBAS
+    
+    
+  printf("\n");
   system("PAUSE");	
-  return 0;
+  return 0; 
 
 }
-
