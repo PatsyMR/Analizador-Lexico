@@ -22,43 +22,36 @@ int main(int argc, char *argv[])
     FILE *fp=NULL;
     char buf[BUFLEN];    
     fp=CrearArchivo(filename,"r");  
-    
-<<<<<<< HEAD
-    token *t;  
+
+   // token *t;  
    // t=is_number(fp);
     //printf("lexema %s\n",t->lexema); 
     //printf("lid %d\n",t->id); 
     
-    ///////////////
-     while(!feof(fp))
-    {
-        t=isOpe(fp);  
-        printf("\n");         
-    }
-    fclose(fp);
-   //////// 
-    
-=======
+      
     token *t; //Creación del token que almacena resultados 
->>>>>>> d319683e6dec3900f488c132a1636d90cbdcb343
+
     
 //////////////////////////////// PRUEBAS YULI
   //  printf("****** COMENTARIOS ******\n\n");
     while(!feof(fp))
     {
         t=isComment(fp); //Comentarios
-       // t=isString(fp);  //Cadenas  
+       //t=isString(fp);  //Cadenas 
+        //t=isOpe(fp);  
+       //printf("\n"); 
     }
     fclose(fp);
 /////////////////////////////// HASTA AQUI HAGO MIS PRUEBAS
       
   
-<<<<<<< HEAD
+
  
-=======
-  printf("\n");
->>>>>>> d319683e6dec3900f488c132a1636d90cbdcb343
+
+ // printf("\n");
+
   system("PAUSE");	
   return 0;
 
 }
+

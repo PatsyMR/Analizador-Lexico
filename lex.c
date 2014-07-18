@@ -4,7 +4,8 @@
 //Funcion para detectar comentarios ( //, $ )
 token *isComment(FILE *fp){
       int k=0;
-      token *t=NULL;
+      token *t=0;
+      //token *t=NULL;
       char c=0;
       int state =0, is_token=FALSE, count=0;
       long int pos;
@@ -76,7 +77,7 @@ token *isComment(FILE *fp){
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
-              t->id = comentario; // printf("%d \n",t->id);
+              t->id = ID_COMMENTT; // printf("%d \n",t->id);
               printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
@@ -155,7 +156,7 @@ token *isString(FILE *fp){
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
-              t->id=cadena;  
+              t->id = ID_STRING;  
               printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
@@ -350,7 +351,7 @@ token *is_number(FILE *fp)
               for(k=0; k<count; k++)
               {
                   t->lexema[k]=fgetc(fp);
-                  t->id=ID_NUMBER;
+                  t->id=1000;
                 //t[k]=fgetc(fp);
               }
               t->lexema[count]='\0'; //la diagonal 0 de espacio  
@@ -511,10 +512,9 @@ void tokenSetLex(token *t,char *lexema)
      }     
         t->lexema[l]='\0';
 }
-<<<<<<< HEAD
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-=======
->>>>>>> d319683e6dec3900f488c132a1636d90cbdcb343
+
+
+
 
 
