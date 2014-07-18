@@ -10,15 +10,15 @@
 
 #define ERROR -1
 
-<<<<<<< HEAD
-#define ID_NUMBER 1000
-#define ID_OPE 1001
-=======
-#define ID_NUMBER 1001
-#define cadena 10002     //identificar cadenas
-#define comentario 1000  //Identificador de comentarios
 
->>>>>>> d319683e6dec3900f488c132a1636d90cbdcb343
+
+#define ID_OPE 1003
+
+#define ID_COMMENTT 1001
+    //identificar cadenas
+#define ID_NUMBER 1000  //Identificador de comentarios
+#define ID_STRING 1002
+
 
 typedef struct toxen_tag
 {
