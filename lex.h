@@ -8,10 +8,17 @@
 #define A2 3
 #define ERROR -1
 
-#define ID_COMMENT 1000
-#define ID_STRING 1001
-#define ID_OPE 1002
-#define ID_NUMBER 1003
+//id_identificador
+//id_reservadas
+#define ID_COMMENT 1003
+#define ID_STRING 1004
+#define ID_NUMBER_FLO 1005
+#define ID_NUMBER_INT 1006
+#define ID_OPE 1007
+//id_operadorLogico
+//id_operador_agrupacion
+#define ID_UKNOWN 1010
+
 typedef struct toxen_tag
 {
     char *lexema;
@@ -19,18 +26,24 @@ typedef struct toxen_tag
 }token;
 
 int isNumber(char c);
-int isLetter(char c);
+FILE* CrearArchivo(char filename[], char *tipo);
+token *tokenCreate();
+token *isComment(FILE *pf);//Comentarios   
+token *isString(FILE *fp); //Cadenas
+token *isOpe(FILE *fp);  //Detecta Operadores aritmeticos
+token *isIntFloat(FILE *pf); //Detecta Enteros y Flotantes
+token *isUknown(FILE *fp);
+
+
+/*int isLetter(char c);
 int isalPhanum(char c);
 int isHex(char c);
 int isInteger(FILE *pf);
-
-token *isComment(FILE *pf);//Comentarios   
-token *isString(FILE *fp); //Cadenas
-token *isOpe(FILE *fp);  //Operadores
-
 token *is_number(FILE *pf);
-FILE* CrearArchivo(char filename[], char *tipo);
-
-token *tokenCreate();
 void tokenfree(token *t);
 void tokenSetLex(token *t,char *lexema);
+*/
+
+
+
+

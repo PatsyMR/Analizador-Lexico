@@ -57,21 +57,18 @@ token *isString(FILE *fp){
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
               t->id = ID_STRING;  
-              printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
               {
-                  t->lexema[k]=fgetc(fp);
-                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+                  t->lexema[k]=fgetc(fp);               
               }
-              printf("\n");
               is_token=FALSE; 
               state=0;  
               
               t->lexema[count]='\n'; //la \n para fin de comentario             
            }
            else{
-                //fseek(fp,pos,SEEK_SET);
+                fseek(fp,pos,SEEK_SET);
                 return NULL;  
                 } 
  
@@ -157,12 +154,12 @@ token *isComment(FILE *fp){
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
               t->id = ID_COMMENT;  
-              printf("%d  ",t->id); //Solo imprimir identificador
+          //    printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
               {
                   t->lexema[k]=fgetc(fp);
-                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+                 // printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
               }
               is_token=FALSE; 
               state=0;  
@@ -170,13 +167,133 @@ token *isComment(FILE *fp){
               t->lexema[count]='\n'; //la \n para fin de comentario             
            }
            else{
-                //fseek(fp,pos,SEEK_SET);
+                fseek(fp,pos,SEEK_SET);
                 return NULL;  
                 } //O -1
  
-           return t;
-    
+           return t;    
 }
+
+
+
+//Checa que sea número (0 - 9)
+token *isIntFloat(FILE *fp)
+{
+      int k=0;
+      int flot = 0;
+      token *t=0;
+      //char *t=0;
+      char c;
+      int state =0, is_token=FALSE,count=0;
+      long int pos;
+      pos = ftell(fp);
+      
+      do{
+          switch(state)
+          {          
+          case 0:
+          c=fgetc(fp);
+          
+          if(isNumber(c))
+          {
+             state = A1;
+             count++;
+          }
+          else if(c=='+' || c=='-')
+          {
+               state =1;
+               count++;
+           }
+           else
+           {
+               state=ERROR;
+           }
+           break;
+           
+           case 1:
+           c=fgetc(fp);
+          
+          if(isNumber(c))
+          {
+             state = A1;
+             count++;
+          }         
+           else
+           {
+               state=ERROR;
+           }
+           break;           
+                
+           case A1:
+           c=fgetc(fp);
+          // t->id=ID_NUMBER_INT;
+          
+          if(isNumber(c))
+          {
+             state = A1; 
+             count++;
+          }
+          else if(c=='.')
+          {
+               state =A2;
+               count++;
+               flot = 1; //Bandera para identificar q es número flotante
+           }
+           else
+           {
+               state=ERROR;
+               is_token=TRUE;
+           }
+           break;             
+           
+         case A2:    //es igual que un caso 3
+           c=fgetc(fp);
+         //  t->id=ID_NUMBER_FLO;
+          
+          if(isNumber(c))
+          {
+             state = A2;
+             count++;
+          }
+           else
+           {
+               state=ERROR;
+               is_token=TRUE;
+           }
+           break;
+          
+          }
+         }while(state != ERROR);          
+
+
+            if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              if(flot==1)
+              t->id=ID_NUMBER_FLO; 
+              else
+              t->id=ID_NUMBER_INT; 
+              
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);               
+              }
+              is_token=FALSE; 
+              flot=0;
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+                fseek(fp,pos,SEEK_SET); //AQUI CAMBIÉ
+                return NULL;  
+                } 
+                 
+           return t;           
+}//fin de funcion
 
 
 //Detecta Operadores (aritéticos, agrupación..)
@@ -247,45 +364,152 @@ token *isOpe(FILE *fp)
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
               t->id = ID_OPE;  
-              printf("%d  ",t->id); //Solo imprimir identificador
-              
+    
               for(k=0; k<count; k++)
               {
-                  t->lexema[k]=fgetc(fp);
-                  printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+                  t->lexema[k]=fgetc(fp);                
               }
-              printf("\n");
               is_token=FALSE; 
               state=0;  
               
               t->lexema[count]='\n'; //la \n para fin de comentario             
            }
            else{
-                //fseek(fp,pos,SEEK_SET);
+                fseek(fp,pos,SEEK_SET);
                 return NULL;  
                 } 
  
-           return t;
-    
+           return t;    
+}
+
+                
+//Detecta comentarios definidos por ("", $)
+token *isUknown(FILE *fp){
+      int k=0;
+      token *t=NULL;
+      char c=0;
+      int state =0, is_token=FALSE, count=0;
+      long int pos;
+      pos = ftell(fp);
+     
+ //     do{
+ //         switch(state)
+ //         {          
+ //    case 0:
+           c=fgetc(fp);
+           count++;
+ //          state=ERROR; // printf("token true\n\n");
+           is_token=TRUE;
+  //         break;    
+         
+  //        }//Fin switch
+  //    }while(state != ERROR);             
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              t->id = ID_UKNOWN;               
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);
+                  printf("%c",t->lexema[k]);                
+              }
+              is_token=FALSE; 
+              state=0;                
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+             //   fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } 
+ 
+           return t;    
 }
 
 
-//Detecta numeros Enteros
-int isInteger(FILE *pf){
+int isNumber(char c){//para ver si octiene un numero [0-9]
 
-    int k, Count=0;
+    if(c>='0' && c<='9')
+    {
+        return TRUE;
+    }
+    return FALSE;
+
+}
+
+      
+FILE* CrearArchivo(char filename[], char *tipo)
+{
+      FILE *fp;
+      if((fp=fopen(filename,tipo))==NULL)
+      {
+         fprintf(stderr,"Error opening file.");
+         exit(1);
+      }      
+     
+     return fp;      
+ }
+
+
+
+token *tokenCreate()
+{
+       token *retVal;
+       retVal = (token*)malloc(sizeof(token));
+       retVal->lexema = NULL;
+       retVal->id=0;
+
+       return retVal;      
+}
+
+/*
+void tokenfree(token *t)
+{
+     if(t->lexema != NULL);
+     free(t->lexema);
+     t->id=0;     
+}
+
+
+void tokenSetLex(token *t,char *lexema)
+{
+     int k;
+     int l = strlen(lexema);
+     t->lexema=(char*)malloc(sizeof(char)*(l+1));
+     
+     for(k=0; k<l; k++)
+     {
+        t->lexema[k]=lexema[k];
+     }     
+        t->lexema[l]='\0';
+}
+*/
+////////////////////////////////////// NO SE NECESITAN (CREO)
+
+/*
+
+//Detecta numeros Enteros
+token *isInteger(FILE *pf){
+
+    int k, count=0, is_token=FALSE, state =0;
     char c,*str;
     long int pos;
     pos = ftell(pf);
+    token *t=0;
+    
     c=fgetc(pf);
     if(isNumber(c)){
     do
     {
-        Count ++;
+        count ++;
         c = fgetc(pf);
-    }while(isNumber(c));
-        str = (char*)malloc(sizeof(char)*(Count+1));
-        fseek(pf,pos,SEEK_SET);
+        is_token=TRUE;
+     }while(isNumber(c));
+        str = (char*)malloc(sizeof(char)*(count+1));
+       // fseek(pf,pos,SEEK_SET);
         for(k=0;k<Count;k++)
         {
             str[k]=fgetc(pf);
@@ -295,15 +519,46 @@ int isInteger(FILE *pf){
     return atoi(str);
     }
     else
-        return 0;
+        return 0;       
+}
 
+
+int isalPhanum(char c) //para ver si [a-z A-Z 0-9]
+{
+    //if((c>='A' && c<='z') || (c>='0' && c<='9'))
+    if(isNumber(c) || isLetter(c))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+
+int isHex(char c)
+{
+    if(isNumber(c) || c>='A' && c<='F')
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+
+int isLetter(char c)//para ver si esta entre [a-z A-Z]
+{
+    if((c>='A' && c<='Z') || (c>='a' && c<='z'))
+    {
+        return TRUE;
+    }
+    return FALSE;
 }
 
 
 //Checa que sea número (0 - 9)
-token *is_number(FILE *fp)
+token *isInteger(FILE *fp)
 {
       int k=0;
+      int flot = 0;
       token *t=0;
       //char *t=0;
       char c;
@@ -345,11 +600,11 @@ token *is_number(FILE *fp)
            {
                state=ERROR;
            }
-           break;
-           
+           break;           
                 
            case A1:
            c=fgetc(fp);
+          // t->id=ID_NUMBER_INT;
           
           if(isNumber(c))
           {
@@ -360,17 +615,18 @@ token *is_number(FILE *fp)
           {
                state =A2;
                count++;
+               flot = 1; //Bandera para identificar q es número flotante
            }
            else
            {
                state=ERROR;
                is_token=TRUE;
            }
-           break;  
-           
+           break;             
            
          case A2:    //es igual que un caso 3
            c=fgetc(fp);
+         //  t->id=ID_NUMBER_FLO;
           
           if(isNumber(c))
           {
@@ -385,118 +641,39 @@ token *is_number(FILE *fp)
            break;
           
           }
-          }while(state != ERROR);          
-           
-           
-           if(is_token)
+         }while(state != ERROR);          
+
+
+            if(is_token)
            {
               fseek(fp,pos,SEEK_SET);
-              //t=(char*)malloc(sizeof(char)*(count+1)); //????????????
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              if(flot==1)
+              t->id=ID_NUMBER_FLO; 
+              else
+              t->id=ID_NUMBER_INT; 
+          //    printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
               {
                   t->lexema[k]=fgetc(fp);
-                  t->id=ID_NUMBER;
-                //t[k]=fgetc(fp);
+          //        printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
               }
-              t->lexema[count]='\0'; //la diagonal 0 de espacio  
+          //    printf("\n");
+              is_token=FALSE; 
+              flot=0;
+              state=0;  
               
+              t->lexema[count]='\n'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET);
                 return NULL;  
-                } //O -1
-           return t;
-           //return atof(t);
-           
-           
-   }//fin de funcion
-                
-      
-FILE* CrearArchivo(char filename[], char *tipo)
-{
-      FILE *fp;
-      if((fp=fopen(filename,tipo))==NULL)
-      {
-         fprintf(stderr,"Error opening file.");
-         exit(1);
-      }      
-     
-     return fp;      
- }
+                } 
+                 
+           return t;           
+}//fin de funcion
 
-
-
-token *tokenCreate()
-{
-       token *retVal;
-       retVal = (token*)malloc(sizeof(token));
-       retVal->lexema = NULL;
-       retVal->id=0;
-
-       return retVal;      
-}
-
-void tokenfree(token *t)
-{
-     if(t->lexema != NULL);
-     free(t->lexema);
-     t->id=0;     
-}
-
-
-void tokenSetLex(token *t,char *lexema)
-{
-     int k;
-     int l = strlen(lexema);
-     t->lexema=(char*)malloc(sizeof(char)*(l+1));
-     
-     for(k=0; k<l; k++)
-     {
-        t->lexema[k]=lexema[k];
-     }     
-        t->lexema[l]='\0';
-}
-
-////////////////////////////////////// NO SE NECESITAN (CREO)
-
-int isNumber(char c){//para ver si octiene un numero [0-9]
-
-    if(c>='0' && c<='9')
-    {
-        return TRUE;
-    }
-    return FALSE;
-
-}
-
-int isLetter(char c){//para ver si esta entre [a-z A-Z]
-
-    if((c>='A' && c<='Z') || (c>='a' && c<='z'))
-    {
-        return TRUE;
-    }
-    return FALSE;
-}
-
-int isalPhanum(char c){//para ver si [a-z A-Z 0-9]
-
-    //if((c>='A' && c<='z') || (c>='0' && c<='9'))
-    if(isNumber(c) || isLetter(c))
-    {
-        return TRUE;
-    }
-    return FALSE;
-
-}
-int isHex(char c){
-
-
-    if(isNumber(c) || c>='A' && c<='F')
-    {
-        return TRUE;
-    }
-    return FALSE;
-}
+*/
