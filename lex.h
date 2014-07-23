@@ -18,7 +18,6 @@
 #define ID_OPERAGRU 1008 // operador_agrupacion
 
 //id_operadorLogico
-//id_operador_agrupacion
 #define ID_UKNOWN 1010
 
 typedef struct toxen_tag

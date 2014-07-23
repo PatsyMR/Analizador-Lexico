@@ -151,38 +151,33 @@ token *isComment(FILE *fp){
            {
               fseek(fp,pos,SEEK_SET);
               t=tokenCreate();
-              t->lexema=(char*)malloc(sizeof(char)*(count+1));
-              
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));             
               t->id = ID_COMMENT;  
-          //    printf("%d  ",t->id); //Solo imprimir identificador
               
               for(k=0; k<count; k++)
               {
-                  t->lexema[k]=fgetc(fp);
-                 // printf("%c",t->lexema[k]); //Imprimir caracter a caracter del comentario                  
+                  t->lexema[k]=fgetc(fp);                 
               }
               is_token=FALSE; 
-              state=0;  
-              
+              state=0;             
               t->lexema[count]='\n'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET);
                 return NULL;  
-                } //O -1
+                } 
  
            return t;    
 }
 
 
 
-///////**********Checa que sea número (0 - 9)*********////////
+///////**********Checa que sea número Entero o Flotante*********////////
 token *isIntFloat(FILE *fp)
 {
       int k=0;
       int flot = 0;
       token *t=0;
-      //char *t=0;
       char c;
       int state =0, is_token=FALSE,count=0;
       long int pos;
@@ -226,7 +221,6 @@ token *isIntFloat(FILE *fp)
                 
            case A1:
            c=fgetc(fp);
-          // t->id=ID_NUMBER_INT;
           
           if(isNumber(c))
           {
@@ -248,7 +242,6 @@ token *isIntFloat(FILE *fp)
            
          case A2:    //es igual que un caso 3
            c=fgetc(fp);
-         //  t->id=ID_NUMBER_FLO;
           
           if(isNumber(c))
           {
@@ -288,12 +281,12 @@ token *isIntFloat(FILE *fp)
               t->lexema[count]='\n'; //la \n para fin de comentario             
            }
            else{
-                fseek(fp,pos,SEEK_SET); //AQUI CAMBIÉ
+                fseek(fp,pos,SEEK_SET); 
                 return NULL;  
                 } 
                  
            return t;           
-}//fin de funcion
+}
 
 
 ///////////*****Detecta Operadores aritméticos******/////////////
@@ -475,52 +468,32 @@ token *isOpeagru(FILE *fp)
 
 
 
-
-                
-////////******Detecta comentarios definidos por ("", $)******///////////
+//Clasifica el tpken como desconocido(no entra en ninguna otra clasificacion)
 token *isUknown(FILE *fp){
       int k=0;
       token *t=NULL;
       char c=0;
-      int state =0, is_token=FALSE, count=0;
+      int state =0, is_token=FALSE, count=1;
       long int pos;
       pos = ftell(fp);
-     
- //     do{
- //         switch(state)
- //         {          
- //    case 0:
-           c=fgetc(fp);
-           count++;
- //          state=ERROR; // printf("token true\n\n");
-           is_token=TRUE;
-  //         break;    
-         
-  //        }//Fin switch
-  //    }while(state != ERROR);             
-           
-           if(is_token)
-           {
+      
+      c=fgetc(fp);
+
+          if(c != '\n' && c!=32){
               fseek(fp,pos,SEEK_SET);
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
               
-              t->id = ID_UKNOWN;               
-              for(k=0; k<count; k++)
-              {
-                  t->lexema[k]=fgetc(fp);
-                  printf("%c",t->lexema[k]);                
-              }
-              is_token=FALSE; 
-              state=0;                
-              t->lexema[count]='\n'; //la \n para fin de comentario             
-           }
-           else{
-             //   fseek(fp,pos,SEEK_SET);
-                return NULL;  
-                } 
- 
-           return t;    
+                  t->id = ID_UKNOWN;               
+                  t->lexema[0]=fgetc(fp);                           
+              t->lexema[1]='\n'; //la \n para fin de comentario                        
+           }           
+           else
+           {
+             //  fseek(fp,pos,SEEK_SET);
+               return NULL;
+           }  
+           return t;  
 }
 
 
