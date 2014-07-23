@@ -34,7 +34,10 @@ int main(int argc, char *argv[])
 //operadores logicos
        else if(t=isOpeagru(fp)){
          printf("\n Operador de agrupacion --> %d %s",t->id,t->lexema);       
-            }     
+            } 
+       else if(t=isPalabra(fp)){   //Esta va hasta arriba
+         printf("\n%d Palabra --> %s",t->id,t->lexema); 
+            }    
        else if(t=isUknown(fp)){
         // t=isUknown(fp);
          printf("\n Desconocido --> %d %s",t->id,t->lexema);    

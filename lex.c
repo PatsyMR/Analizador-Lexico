@@ -1,5 +1,91 @@
 #include "lex.h"
 
+
+//Checa que si la palabra es Reservada o identificador
+token *isPalabra(FILE *fp)
+{
+      int k=0;
+      int flot = 0;
+      token *t=0;
+      //char *t=0;
+      char c;
+      int state =0, is_token=FALSE,count=0;
+      long int pos;
+      pos = ftell(fp);
+      
+      do{
+          switch(state)
+          {          
+          case 0:
+          c=fgetc(fp);
+          
+          if(isLetter(c))
+          {
+             state = A1;
+             count++;
+          }
+           else
+           {
+               state=ERROR;
+           }
+           break;
+           
+           case A1:
+           c=fgetc(fp);
+          
+          if(isNumber(c)  || isLetter(c)) //?????????????????????????
+          {
+             state = A1;
+             count++;
+          }         
+           else
+           {
+               state=ERROR;
+               is_token=TRUE;
+           }
+           break;           
+         }
+         }while(state != ERROR);          
+
+
+            if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+            
+          //    t->id=ID_PALABRA;   //Este no es necesario  
+              
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);               
+              }
+              is_token=FALSE; 
+              flot=0;
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+                fseek(fp,pos,SEEK_SET); //AQUI CAMBIÉ
+                return NULL;  
+                }                  
+           return t;           
+}//fin de funcion
+
+
+//para ver si esta entre [a-z A-Z]
+int isLetter(char c)
+{
+    if((c>='A' && c<='Z') || (c>='a' && c<='z'))
+    {
+        return TRUE;
+    }
+    return FALSE;
+}
+
+
+
 ////////********Detecta cadenas*************/////////////
 token *isString(FILE *fp){
       int k=0;

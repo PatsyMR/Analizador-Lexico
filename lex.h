@@ -10,6 +10,9 @@
 
 //id_identificador
 //id_reservadas
+//#define ID_PALABRA 1011 //Se va poder omitr
+#define ID_PALABRA 1011 //Se va poder omitr
+
 #define ID_COMMENT 1003
 #define ID_STRING 1004
 #define ID_NUMBER_FLO 1005
@@ -27,6 +30,7 @@ typedef struct toxen_tag
 }token;
 
 int isNumber(char c);
+int isLetter(char c);
 FILE* CrearArchivo(char filename[], char *tipo);
 token *tokenCreate();
 token *isComment(FILE *pf);//Comentarios   
@@ -35,6 +39,7 @@ token *isOpe(FILE *fp);  //Detecta Operadores aritmeticos
 token *isOpeagru(FILE *fp); //operadores de agrupación
 token *isIntFloat(FILE *pf); //Detecta Enteros y Flotantes
 token *isUknown(FILE *fp);
+token *isPalabra(FILE *fp);
 
 
 /*int isLetter(char c);
