@@ -15,6 +15,8 @@
 #define ID_NUMBER_FLO 1005
 #define ID_NUMBER_INT 1006
 #define ID_OPE 1007
+#define ID_OPERAGRU 1008 // operador_agrupacion
+
 //id_operadorLogico
 //id_operador_agrupacion
 #define ID_UKNOWN 1010
@@ -31,6 +33,7 @@ token *tokenCreate();
 token *isComment(FILE *pf);//Comentarios   
 token *isString(FILE *fp); //Cadenas
 token *isOpe(FILE *fp);  //Detecta Operadores aritmeticos
+token *isOpeagru(FILE *fp); //operadores de agrupación
 token *isIntFloat(FILE *pf); //Detecta Enteros y Flotantes
 token *isUknown(FILE *fp);
 

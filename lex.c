@@ -1,6 +1,6 @@
 #include "lex.h"
 
-//Detecta cadenas
+////////********Detecta cadenas*************/////////////
 token *isString(FILE *fp){
       int k=0;
       token *t=NULL;
@@ -78,7 +78,7 @@ token *isString(FILE *fp){
 
 
 
-//Detecta comentarios definidos por ("", $)
+/////////****Detecta comentarios definidos por ("", $)****/////////////
 token *isComment(FILE *fp){
       int k=0;
       token *t=NULL;
@@ -176,7 +176,7 @@ token *isComment(FILE *fp){
 
 
 
-//Checa que sea número (0 - 9)
+///////**********Checa que sea número (0 - 9)*********////////
 token *isIntFloat(FILE *fp)
 {
       int k=0;
@@ -296,7 +296,7 @@ token *isIntFloat(FILE *fp)
 }//fin de funcion
 
 
-//Detecta Operadores (aritéticos, agrupación..)
+///////////*****Detecta Operadores aritméticos******/////////////
 token *isOpe(FILE *fp)
 {
       int k=0;
@@ -382,8 +382,102 @@ token *isOpe(FILE *fp)
            return t;    
 }
 
+
+///////////*****Detecta Operadores de agrupacion******/////////////
+token *isOpeagru(FILE *fp)
+{
+      int k=0;
+      token *t=0;
+      char c;
+      int state =0, is_token=FALSE,count=0;
+      long int pos;
+      pos = ftell(fp);
+      
+      do{
+          switch(state)
+          {          
+ case 0:
+          c=fgetc(fp);
+          
+    if(c=='(' )
+          
+         {
+             state = A1;
+             count++;
+         }
+    else if (c=='{')
+           {              
+             state = A1;
+             count++;
+           }
+    else if (c=='[')
+           {               
+             state = A1;
+             count++;
+           }
+    else if (c==')')
+           {               
+             state = A1;
+             count++;
+           }
+   else if (c=='}')
+           {               
+             state = A1;
+             count++;
+           }
+  else if (c==']')
+           {               
+             state = A1;
+             count++;
+           }         
+                   
+  else
+           {
+               state=ERROR; // printf("Error");
+           }
+
+           break;
+           
+ 
+  case A1:
+               state=ERROR; // printf("token true\n\n");
+               is_token=TRUE;
+           break;
+                    
+          }
+          }while(state != ERROR);      
+           
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              t->id = 1008;  
+    
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);                
+              }
+              is_token=FALSE; 
+              state=0;  
+              
+              t->lexema[count]='\n'; //la \n para fin de comentario             
+           }
+           else{
+                fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } 
+ 
+           return t;    
+}
+
+
+
+
                 
-//Detecta comentarios definidos por ("", $)
+////////******Detecta comentarios definidos por ("", $)******///////////
 token *isUknown(FILE *fp){
       int k=0;
       token *t=NULL;

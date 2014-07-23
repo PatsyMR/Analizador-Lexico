@@ -5,7 +5,7 @@
 int main(int argc, char *argv[])
 {
         //Creacion del archivo de lectura
-    char filename[15]="archivo2.txt";
+    char filename[15]="archivo.txt";
     FILE *fp=NULL;
     char buf[BUFLEN];    
     fp=CrearArchivo(filename,"r");  
@@ -28,8 +28,11 @@ int main(int argc, char *argv[])
               printf("\n%d Entero --> %s",t->id,t->lexema);
          }
        else if(t=isOpe(fp)){
-         printf("\n%d Operdor --> %s",t->id,t->lexema);       
+         printf("\n%d Operador aritmetico--> %s",t->id,t->lexema);       
             }
+       else if(t=isOpeagru(fp)){
+         printf("\n%d Operador de agrupacion --> %s",t->id,t->lexema);       
+            }     
        else{  //FALTA Q IMPRIMA LOS \n
          t=isUknown(fp);
          printf("\n%d Desconocido --> %s",t->id,t->lexema);    
