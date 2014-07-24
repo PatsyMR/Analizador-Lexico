@@ -1,10 +1,15 @@
 #include "lex.h"
+#include "listaChar.h"
 
 #define BUFLEN 30
    
 int main(int argc, char *argv[])
 {
 
+	//archivo de palabras reservadas 
+	guardarDiccionario("ArchivoReservadas.txt");
+	
+	
         //Creacion del archivo de lectura
     char filename[15]="archivo.txt";
     FILE *fp=NULL;

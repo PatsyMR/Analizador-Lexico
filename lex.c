@@ -1,5 +1,7 @@
 #include "lex.h"
-
+#include "listaChar.h"
+Lista listaDiccionarioAux= NULL;
+Lista listaDiccionario = NULL;
 
 //Checa que si la palabra es Reservada o identificador
 token *isPalabra(FILE *fp)
@@ -12,7 +14,7 @@ token *isPalabra(FILE *fp)
       int state =0, is_token=FALSE,count=0;
       long int pos;
       pos = ftell(fp);
-      
+      listaDiccionarioAux=listaDiccionario;
       do{
           switch(state)
           {          
@@ -48,28 +50,63 @@ token *isPalabra(FILE *fp)
          }while(state != ERROR);          
 
 
-            if(is_token)
-           {
+if(is_token)
+{
               fseek(fp,pos,SEEK_SET);
               t=tokenCreate();
               t->lexema=(char*)malloc(sizeof(char)*(count+1));
-            
-          //    t->id=ID_PALABRA;   //Este no es necesario  
-              
-              for(k=0; k<count; k++)
-              {
-                  t->lexema[k]=fgetc(fp);               
-              }
-              is_token=FALSE; 
-              flot=0;
-              state=0;  
-              
-              t->lexema[count]='\n'; //la \n para fin de comentario             
-           }
-           else{
-                fseek(fp,pos,SEEK_SET); //AQUI CAMBIÉ
-                return NULL;  
-                }                  
+			int banderaIndentificador=0;
+			
+			
+                       for(k=0; k<count; k++)
+						  {
+							  t->lexema[k]=fgetc(fp);               
+						  }
+						  is_token=FALSE; 
+						  flot=0;
+						  state=0; 
+						t->lexema[count]='\n'; //la \n para fin de comentario
+								
+//char *cade;
+//cade=(char*)malloc(sizeof(char)*10);
+//strcpy(cade,t->lexema);
+						
+//printf("%d %d\n",strlen(t->lexema),strlen(listaDiccionario->valor) );
+//printf("%s %s",cade,listaDiccionario->valor );	
+
+				while(!listaVacia(listaDiccionario) )
+						{			
+				
+							if(strcmp(listaDiccionario->valor,t->lexema)==0)
+							  {
+											   
+											  t->id=ID_KEYWORD; 
+											  return t;							  
+											  banderaIndentificador=1;
+										  
+							  listaDiccionario=listaDiccionarioAux; 
+							  }
+				
+							 else if(!listaVacia(listaDiccionario))
+							{
+								listaDiccionario=listaDiccionario->siguiente;
+							}
+							 
+						}	
+
+
+
+						if(banderaIndentificador==0)
+						{
+						 t->id=ID_IDENTIFICATOR;
+						}
+}//if
+	
+else
+{
+	  fseek(fp,pos,SEEK_SET);
+                return NULL;
+}
            return t;           
 }//fin de funcion
 
@@ -616,6 +653,55 @@ token *tokenCreate()
        retVal->id=0;
 
        return retVal;      
+}
+
+
+
+
+
+void guardarDiccionario(char * nombre)
+{
+
+FILE *archivo;
+ 
+	
+ 	char caracteres[512];
+	char *str;
+	str=(char*)malloc(sizeof(char)*512);
+ 	char lim[4] = " \n\t";
+	
+	
+ 	if (archivo == NULL)
+ 		exit(1);
+ 
+ 	printf("\nEl contenido del archivo de prueba es \n\n");
+ 	
+archivo = fopen(nombre,"r");
+ 		
+					while (!feof(archivo))
+					{
+						if(archivo!='\0')
+						{
+							
+								fgets(caracteres,512,archivo);
+								//printf("%s\n",caracteres);
+								str=strtok(caracteres,lim);
+								
+								while(str !=NULL)
+								{
+								printf(">>>%s\n",str);
+								insertar(&listaDiccionario,str," "," ");
+								str = strtok(NULL, lim);								
+								}					
+								
+						}		
+					}
+					
+						fclose(archivo);
+						
+						//mostrarLista(listaDiccionario);
+							
+		
 }
 
 /*

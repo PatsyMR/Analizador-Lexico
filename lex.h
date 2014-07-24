@@ -19,7 +19,8 @@
 #define ID_NUMBER_INT 1006
 #define ID_OPE 1007
 #define ID_OPERAGRU 1008 // operador_agrupacion
-
+#define ID_KEYWORD 1009 //PALABRA RESERVADA
+#define ID_IDENTIFICATOR 1010 // IDENTIFICADORES
 //id_operadorLogico
 #define ID_UKNOWN 1010
 
@@ -40,6 +41,7 @@ token *isOpeagru(FILE *fp); //operadores de agrupación
 token *isIntFloat(FILE *pf); //Detecta Enteros y Flotantes
 token *isUknown(FILE *fp);
 token *isPalabra(FILE *fp);
+void guardarDiccionario(char * nombre);
 
 
 /*int isLetter(char c);
@@ -50,7 +52,6 @@ token *is_number(FILE *pf);
 void tokenfree(token *t);
 void tokenSetLex(token *t,char *lexema);
 */
-
 
 
 
