@@ -25,8 +25,9 @@ int main(int argc, char *argv[])
        else if(t=isString(fp)){
          printf("\n Cadena --> %d %s",t->id,t->lexema);        
             }
-//Aqui identificador
-//Aqui reservada
+       else if(t=isPalabra(fp)){   //Reservada e  Identificador
+         printf("\n%d Palabra --> %s",t->id,t->lexema); 
+            } 
        else if(t=isIntFloat(fp)){  
              if(t->id==ID_NUMBER_FLO)                         
               printf("\n Flotante --> %d %s",t->id,t->lexema);
@@ -36,15 +37,14 @@ int main(int argc, char *argv[])
        else if(t=isOpe(fp)){
          printf("\n Operador aritmetico--> %d %s",t->id,t->lexema);       
             }
-//operadores logicos
+       //operadores logicos
        else if(t=isOpeagru(fp)){
          printf("\n Operador de agrupacion --> %d %s",t->id,t->lexema);       
             } 
-       else if(t=isPalabra(fp)){   //Esta va hasta arriba
-         printf("\n%d Palabra --> %s",t->id,t->lexema); 
-            }    
+       else if(t=isOperel(fp)){ //> < =...
+         printf(" Operador Relacional--> %d %s",t->id,t->lexema);       
+            }
        else if(t=isUknown(fp)){
-        // t=isUknown(fp);
          printf("\n Desconocido --> %d %s",t->id,t->lexema);    
             }
 

@@ -111,6 +111,95 @@ else
 }//fin de funcion
 
 
+token *isOperel(FILE *fp)
+{
+      int k=0;
+      token *t=0;
+      char c;
+      int state =0, is_token=FALSE,count=0;
+      long int pos;
+      pos = ftell(fp);
+      
+      do{
+          switch(state)
+          {          
+ case 0:
+          c=fgetc(fp);
+
+          if (c== '<' || c== '>'){
+             state = A1;
+             count++;
+             }
+
+         else if(c== '!' || '=')       
+           {               
+             state = 1;
+             count++;
+           }
+           
+  case A1: ////igual 1
+      c=fgetc(fp);
+        if (c == '=')
+           {               
+             state = A2;
+             count++;
+           }
+        else
+           {
+             state=ERROR;
+             is_token=TRUE;
+           }
+        break;
+
+   case 1:
+               c=fgetc(fp);
+               if (c == '=')
+           {               
+             state = A2;
+             count++;
+           }
+            else{
+             state=ERROR;
+             } // printf("token true\n\n");
+           
+           break;
+         
+    case A2:
+               state=ERROR; // printf("token true\n\n");
+               is_token=TRUE;
+              break;          
+          }
+          
+     }while(state != ERROR);      
+           
+           
+           if(is_token)
+           {
+              fseek(fp,pos,SEEK_SET);
+              t=tokenCreate();
+              t->lexema=(char*)malloc(sizeof(char)*(count+1));
+              
+              t->id = ID_OPEREL;  
+              
+              for(k=0; k<count; k++)
+              {
+                  t->lexema[k]=fgetc(fp);                 
+              }
+              is_token=FALSE; 
+              state=0;             
+              t->lexema[count]='\0'; //la \n para fin de comentario             
+           }
+           
+           else{
+                fseek(fp,pos,SEEK_SET);
+                return NULL;  
+                } 
+ 
+           return t;
+    
+}
+
+
 //para ver si esta entre [a-z A-Z]
 int isLetter(char c)
 {

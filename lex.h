@@ -41,6 +41,7 @@ token *isOpeagru(FILE *fp); //operadores de agrupación
 token *isIntFloat(FILE *pf); //Detecta Enteros y Flotantes
 token *isUknown(FILE *fp);
 token *isPalabra(FILE *fp);
+token *isOperel(FILE *fp);//operadores relacionales
 void guardarDiccionario(char * nombre);
 
 
