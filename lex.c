@@ -4,7 +4,7 @@ Lista listaDiccionarioAux= NULL;
 Lista listaDiccionario = NULL;
 
 //Checa que si la palabra es Reservada o identificador
-token *isPalabra(FILE *fp)
+token *keyWordOIdentificator(FILE *fp)
 {
       int k=0;
       int flot = 0;
@@ -65,7 +65,7 @@ if(is_token)
 						  is_token=FALSE; 
 						  flot=0;
 						  state=0; 
-						t->lexema[count]='\n'; //la \n para fin de comentario
+						t->lexema[count]='\0'; //la \n para fin de comentario
 								
 //char *cade;
 //cade=(char*)malloc(sizeof(char)*10);
@@ -81,10 +81,12 @@ if(is_token)
 							  {
 											   
 											  t->id=ID_KEYWORD; 
+											  listaDiccionario=listaDiccionarioAux;
+											  banderaIndentificador=1;											  
 											  return t;							  
-											  banderaIndentificador=1;
+											  
 										  
-							  listaDiccionario=listaDiccionarioAux; 
+							  
 							  }
 				
 							 else if(!listaVacia(listaDiccionario))
@@ -98,6 +100,7 @@ if(is_token)
 
 						if(banderaIndentificador==0)
 						{
+						listaDiccionario=listaDiccionarioAux;
 						 t->id=ID_IDENTIFICATOR;
 						}
 }//if
@@ -110,7 +113,7 @@ else
            return t;           
 }//fin de funcion
 
-
+//Operador Relacional
 token *isOperel(FILE *fp)
 {
       int k=0;
@@ -277,7 +280,7 @@ token *isString(FILE *fp){
               is_token=FALSE; 
               state=0;  
               
-              t->lexema[count]='\n'; //la \n para fin de comentario             
+              t->lexema[count]='\0'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET);
@@ -372,7 +375,7 @@ token *isComment(FILE *fp){
               }
               is_token=FALSE; 
               state=0;             
-              t->lexema[count]='\n'; //la \n para fin de comentario             
+              t->lexema[count]='\0'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET);
@@ -490,7 +493,7 @@ token *isIntFloat(FILE *fp)
               flot=0;
               state=0;  
               
-              t->lexema[count]='\n'; //la \n para fin de comentario             
+              t->lexema[count]='\0'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET); 
@@ -577,7 +580,7 @@ token *isOpe(FILE *fp)
               is_token=FALSE; 
               state=0;  
               
-              t->lexema[count]='\n'; //la \n para fin de comentario             
+              t->lexema[count]='\0'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET);
@@ -668,7 +671,7 @@ token *isOpeagru(FILE *fp)
               is_token=FALSE; 
               state=0;  
               
-              t->lexema[count]='\n'; //la \n para fin de comentario             
+              t->lexema[count]='\0'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET);
@@ -698,7 +701,7 @@ token *isUknown(FILE *fp){
               
                   t->id = ID_UKNOWN;               
                   t->lexema[0]=fgetc(fp);                           
-              t->lexema[1]='\n'; //la \n para fin de comentario                        
+              t->lexema[1]='\0'; //la \n para fin de comentario                        
            }           
            else
            {
@@ -748,6 +751,7 @@ token *tokenCreate()
 
 
 
+//funcion que abre el archivo de palabras reservadas 
 void guardarDiccionario(char * nombre)
 {
 
@@ -778,7 +782,7 @@ archivo = fopen(nombre,"r");
 								
 								while(str !=NULL)
 								{
-								printf(">>>%s\n",str);
+								//printf(">>>%s\n",str);
 								insertar(&listaDiccionario,str," "," ");
 								str = strtok(NULL, lim);								
 								}					
@@ -793,6 +797,85 @@ archivo = fopen(nombre,"r");
 		
 }
 
+
+
+token *analizadorLexico(FILE *fp)
+{
+    token *t;
+	
+    while(!feof(fp))
+	{ 
+						if(t=keyWordOIdentificator(fp))
+						{   
+							if(t->id==ID_KEYWORD)
+								{
+										//printf("\n Palabra Reservada %d --> %s\n",t->id,t->lexema);
+									printf("\n Palabra Reservada\n");
+										return t;
+								}
+							else
+								{ 
+									//printf("\n Indetificador %d--> %s\n",t->id,t->lexema);
+									printf("\n Identificador\n");
+									return t;
+								}
+						} 
+					   else if(t=isComment(fp))
+					   {
+							//printf("\n Comentario --> %d %s\n",t->id,t->lexema);
+						    printf("\nComentario\n");
+							return t;						   
+					   }
+					   else if(t=isString(fp))
+					   {
+							//printf("\n Cadena --> %d %s\n",t->id,t->lexema);
+						    printf("\n Cadena\n");
+							return t;
+					   }
+					   else if(t=isIntFloat(fp))
+					   {  
+							if(t->id==ID_NUMBER_FLO)
+							{
+								//printf("\n Flotante --> %d %s\n",t->id,t->lexema);
+								printf(" \nFlotante\n");
+								return t;
+							}							
+							else
+							{
+								printf("\n Entero\n");
+								//printf("\n Entero --> %d %s\n",t->id,t->lexema);
+								return t;
+							}
+					   }
+					   else if(t=isOpe(fp))
+					   {
+							//printf("\n Operador aritmetico--> %d %s\n",t->id,t->lexema);
+							printf("\nOperador aritmetico\n");						   
+							return t;
+					   }
+					  //operadores logicos
+					   else if(t=isOpeagru(fp))
+					   {
+							//printf("\n Operador de agrupacion --> %d %s\n",t->id,t->lexema);
+							printf("\nOperador de agrupacion\n");
+						    return t;
+					   } 
+					   //Palabras Reservadas e Idetificadores
+					   
+					else if(t=isUknown(fp))
+					{
+						  //printf("\n Desconocido --> %d %s\n",t->id,t->lexema);
+						    printf("\nDesconocido\n");
+							return t;
+					}
+
+	}
+    
+     return ERROR;
+    }
+
+
+////////////////////////////////////// NO SE NECESITAN 
 /*
 void tokenfree(token *t)
 {
@@ -815,7 +898,9 @@ void tokenSetLex(token *t,char *lexema)
         t->lexema[l]='\0';
 }
 */
-////////////////////////////////////// NO SE NECESITAN (CREO)
+
+
+
 
 /*
 
@@ -994,7 +1079,7 @@ token *isInteger(FILE *fp)
               flot=0;
               state=0;  
               
-              t->lexema[count]='\n'; //la \n para fin de comentario             
+              t->lexema[count]='\0'; //la \n para fin de comentario             
            }
            else{
                 fseek(fp,pos,SEEK_SET);

@@ -4,8 +4,6 @@
 
 
 typedef char tipoDato;
-
-
 typedef struct nodoEtiqueta
 {
 		

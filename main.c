@@ -9,49 +9,18 @@ int main(int argc, char *argv[])
 	//archivo de palabras reservadas 
 	guardarDiccionario("ArchivoReservadas.txt");
 	
-	
-        //Creacion del archivo de lectura
+	//Creacion del archivo de lectura
     char filename[15]="archivo.txt";
     FILE *fp=NULL;
     char buf[BUFLEN];    
-    fp=CrearArchivo(filename,"r");  
-    
-    token *t; //Creación del token que almacena resultados     
-    
-    while(!feof(fp)){ 
-       if(t=isComment(fp)){
-         printf("\n Comentario --> %d %s",t->id,t->lexema);        
-            }
-       else if(t=isString(fp)){
-         printf("\n Cadena --> %d %s",t->id,t->lexema);        
-            }
-       else if(t=isPalabra(fp)){   //Reservada e  Identificador
-         printf("\n%d Palabra --> %s",t->id,t->lexema); 
-            } 
-       else if(t=isIntFloat(fp)){  
-             if(t->id==ID_NUMBER_FLO)                         
-              printf("\n Flotante --> %d %s",t->id,t->lexema);
-             else
-              printf("\n Entero --> %d %s",t->id,t->lexema);
-         }
-       else if(t=isOpe(fp)){
-         printf("\n Operador aritmetico--> %d %s",t->id,t->lexema);       
-            }
-       //operadores logicos
-       else if(t=isOpeagru(fp)){
-         printf("\n Operador de agrupacion --> %d %s",t->id,t->lexema);       
-            } 
-       else if(t=isOperel(fp)){ //> < =...
-         printf(" Operador Relacional--> %d %s",t->id,t->lexema);       
-            }
-       else if(t=isUknown(fp)){
-         printf("\n Desconocido --> %d %s",t->id,t->lexema);    
-            }
-
-           }
-    rewind(fp);
-    
-    
+    fp=CrearArchivo(filename,"r");
+	token *t; //Creación del token que almacena resultados   
+	
+	while(!feof(fp))
+	{
+		t=analizadorLexico(fp);
+		printf("%s -> %d\n",t->lexema, t->id);
+	}
     
     /////////////// PRUEBAS DE LO HECHO EN CLASE 
    /* char a = '\\';
