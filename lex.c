@@ -10,6 +10,7 @@ token *keyWordOIdentificator(FILE *fp)
       int flot = 0;
       token *t=0;
       //char *t=0;
+      printf("Yuliana");
       char c;
       int state =0, is_token=FALSE,count=0;
       long int pos;
